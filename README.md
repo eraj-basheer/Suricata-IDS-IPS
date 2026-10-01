@@ -1,15 +1,12 @@
-# Suricata-IDS/IPS
-
-
-# C3T06L3 – Learning IDS/IPS Systems using Suricata on pfSense
+# Suricata IDS/IPS
 
 ## Overview
 
 This lab involved installing and configuring Suricata as an IDS/IPS on pfSense.
 
-The Suricata configuration was used to monitor traffic on the REDLAN interface and detect specific network activity using custom rules.
+The Suricata configuration was used to monitor traffic on the SECURITY interface and detect specific network activity using custom rules.
 
-The lab builds on the pfSense environment created in C3T06L2.
+The lab builds on the configuration from the (pfSense Lab)[https://github.com/eraj-basheer/pfSense-Firewall] 
 
 ## Objectives
 
