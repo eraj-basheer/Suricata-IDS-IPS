@@ -6,18 +6,18 @@ This lab involved installing and configuring Suricata as an IDS/IPS on pfSense.
 
 The Suricata configuration was used to monitor traffic on the SECURITY interface and detect specific network activity using custom rules.
 
-The lab builds on the configuration from my [pfSense Lab Project](https://github.com/eraj-basheer/pfSense-Firewal).
+The lab builds on the configuration from my [pfSense Firewall Project](https://github.com/eraj-basheer/pfSense-Firewal).
 
 ## Objectives
 
 * Verify the existing pfSense environment
 * Install Suricata
-* Configure Suricata on the REDLAN interface
+* Configure Suricata on the SECURITY interface
 * Disable hardware offloading required for Suricata
 * Create custom Suricata rules
 * Generate test traffic from Kali
 * Review Suricata alerts
-* Disable Suricata after testing
+
 
 ## Lab Environment
 
