@@ -6,7 +6,7 @@ This lab involved installing and configuring Suricata as an IDS/IPS on pfSense.
 
 The Suricata configuration was used to monitor traffic on the SECURITY interface and detect specific network activity using custom rules.
 
-The lab builds on the configuration from the (pfSense Lab)[https://github.com/eraj-basheer/pfSense-Firewall] 
+The lab builds on the configuration from my [pfSense Lab Project](https://github.com/eraj-basheer/pfSense-Firewal).
 
 ## Objectives
 
