@@ -73,10 +73,11 @@ machine) to the Metasploitable VM (DMZ server). In order to do this, we have to 
 
 ## Custom Rules
 
-Two custom rules were created.
+Two custom rules assigned to the SECURITY interface were created.
 
-The ICMP rule detects ping traffic directed toward the BLUE or PURPLE networks.
-The Telnet rule detects TCP traffic destined for port 23 on the BLUE or PURPLE networks.
+The ICMP rule detects ping traffic directed toward the INTERNAL or DMZ networks.
+The Telnet rule detects TCP traffic destined for port 23 on the INTERNAL or DMZ networks.
+
 
 ### Rule 1 – ICMP
 
@@ -90,116 +91,25 @@ alert icmp any any -> [192.168.1.0/24,10.30.0.0/24] any (msg:"PING connection at
 alert tcp any any -> [192.168.1.0/24,10.30.0.0/24] 23 (msg:"TELNET connection attempt to INTERNAL/DMZ"; sid:2000002; rev:1;)
 ```
 
+<br>
 
- - EXPLAIN SID AND REV
 <img src="07-custom-rules.png" width="500" height="314">
 
 
 ---
 
-# Task 4 – Testing Suricata
+## Testing Suricata Alerts
 
-## 4.1 Ping Test
+In order to test the alerts, the Kali VM (on SECURITY network) was used to generate ICMP traffic by pinging the Metasploitable VM (on DMZ Network). The Kali VM also connected to the Metasploitable VM via telnet to generate TELNET traffic.
 
-The Kali VM was used to generate ICMP traffic toward the Metasploitable VM.
+<img src="08-testing-alerts.png" width="500" height="591">
 
-Command:
+<br> 
 
-```bash
-ping <METASPLOITABLE-IP>
-```
+The Suricata Alerts page was refreshed after generating the test traffic. The alerts generated logs successfully, as shown below.
 
-### Evidence
+<img src="09-alert-logs.png" width="500" height="314">
 
-![Kali Ping Test](screenshots/07-kali-ping.png)
-
-### Expected Result
-
-Suricata should generate an alert matching the custom ICMP rule.
-
----
-
-## 4.2 Telnet Test
-
-A Telnet connection was then attempted from Kali to Metasploitable.
-
-Command:
-
-```bash
-telnet <METASPLOITABLE-IP>
-```
-
-### Evidence
-
-![Kali Telnet Test](screenshots/08-kali-telnet.png)
-
-### Expected Result
-
-Suricata should generate an alert matching the custom Telnet rule.
-
-The lab specifically instructs the user to perform both a ping and Telnet connection from Kali to Metasploitable and then review the Suricata Alerts tab.
-
----
-
-# 4.3 Suricata Alerts
-
-The Suricata Alerts page was refreshed after generating the test traffic.
-
-### Evidence
-
-![Suricata Alerts](screenshots/09-suricata-alerts.png)
-
-### Results
-
-| Test   | Rule                    | Alert Generated |
-| ------ | ----------------------- | --------------- |
-| Ping   | ICMP custom rule        | [YES/NO]        |
-| Telnet | TCP port 23 custom rule | [YES/NO]        |
-
-The alerts demonstrate that Suricata detected traffic matching the configured signatures.
-
----
-
-# 4.4 Telnet Intrusion Detection
-
-A separate Telnet alert was captured as evidence for the practice activity.
-
-![Telnet Alert](screenshots/10-telnet-alert.png)
-
-**Result:** The Telnet connection attempt from Kali to Metasploitable generated the expected custom Suricata alert.
-
----
-
-# Task 5 – Disable Suricata
-
-After completing the testing, Suricata was disabled on the REDLAN interface.
-
-### Procedure
-
-1. Opened **Services → Suricata**.
-2. Selected the REDLAN interface.
-3. Opened the interface configuration.
-4. Disabled the **Enable** option.
-5. Saved the configuration.
-6. Applied the changes.
-
-### Evidence
-
-![Suricata Disabled](screenshots/11-suricata-disabled.png)
-
-The lab recommends disabling Suricata after completing the activities to reduce resource usage on the pfSense VM.
-
----
-
-# Key Learnings
-
-* Learned how to install Suricata on pfSense.
-* Learned how an IDS/IPS can monitor network traffic.
-* Learned how to configure Suricata to monitor a specific interface.
-* Learned how custom signatures can identify specific traffic.
-* Learned how ICMP and Telnet traffic can trigger alerts.
-* Learned how to review Suricata alerts for security monitoring.
-* Learned the difference between monitoring traffic and actively blocking traffic.
 
 ## Conclusion
 
