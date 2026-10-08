@@ -10,8 +10,7 @@ The lab builds on the configuration from my [pfSense Firewall Project](https://g
 
 ## Objectives
 
-* Verify the existing pfSense environment
-* Install Suricata
+* Install Suricata package on pfSense
 * Configure Suricata on the SECURITY interface
 * Disable hardware offloading required for Suricata
 * Create custom Suricata rules
@@ -21,128 +20,80 @@ The lab builds on the configuration from my [pfSense Firewall Project](https://g
 
 ## Lab Environment
 
-| Component      | Role                           |
-| -------------- | ------------------------------ |
-| pfSense        | Firewall and IDS/IPS           |
-| Kali Linux     | Test/attack machine            |
-| Metasploitable | Target server                  |
-| Debian         | pfSense management workstation |
-| Hyper-V        | Virtualisation platform        |
+| Component | Purpose |
+|---|---|
+| pfSense | Firewall/Router |
+| Debian | Internal Corporate Network Client |
+| Metasploitable | DMZ Client |
+| Kali Linux | Security Testing/Attacker Machine |
+
 
 ## Network Configuration
 
-| Network | Subnet         |
-| ------- | -------------- |
-| BLUE    | 192.168.1.0/24 |
-| PURPLE  | 10.30.0.0/24   |
-| RED     | 192.168.2.0/24 |
-| WAN     | 192.168.0.0/24 |
+| Network | Subnet |
+|---|---|
+| WAN | DHCP |
+| Internal Network | 192.168.1.0/24 |
+| DMZ Network | 10.30.0.0/24 | 
+| Security Testing Network | 192.168.2.0/24 | 
 
-## Task 1 – Verify Environment
+### Network Diagram
 
-Before installing Suricata, I verified the DHCP scopes, VM network connections and pfSense interfaces from the previous firewall lab.
+<img src="01-network-diagram.png" width="500" height="474">
 
-### pfSense Interfaces
+### pfSense Configuration
 
-| Interface   | Operating System Interface | IP Address     |
-| ----------- | -------------------------- | -------------- |
-| BLUELAN     | hn0                        | 192.168.1.1/24 |
-| PURPLE_DMZ  | hn1                        | 10.30.0.1/24   |
-| REDLAN      | hn2                        | 192.168.2.1/24 |
-| INTERNETWAN | hn3                        | DHCP           |
+<img src="02-pfSense-dashboard.png" width="500" height="457">
 
-### Evidence
 
-![pfSense Interfaces](screenshots/02-pfsense-interfaces.png)
+## Installing Suricata
 
-**Result:** The pfSense interfaces were verified before continuing.
+After logging into the pfSense WebConfigurator, open the Package Manager page under the System drop down menu. Following this, select Available Packages and search for and download Suricata. Below is the successful installation.
 
----
+<img src="03-suricata-download.png" width="500" height="490"> <br>
+<img src="04-suricata-installed.png" width="500" height="398">
 
-# Task 2 – Install Suricata
+## Configure Suricata
 
-Suricata was installed through the pfSense Package Manager.
+First, hardware checksum offloading needs to be disabled. After clicking on System and then Advanced, go to Networking the
+tab. Ensure disable hardware checksum offloading is selected. Save changes and then reboot pfSense. This step ensures accurate packet inspection and alert generation. 
+<br>
 
-### Procedure
+<img src="05-suricata-configuration.png" width="500" height="560">
 
-1. Opened pfSense WebConfigurator.
-2. Selected **System → Package Manager**.
-3. Opened **Available Packages**.
-4. Searched for **Suricata**.
-5. Installed the Suricata package.
-6. Confirmed successful installation.
 
-### Evidence
+## Configure SECURITY Monitoring
 
-![Suricata Installation](screenshots/03-suricata-installed.png)
+In our current lab scenario, we want to monitor traffic sent from the Kali VM (Security Testing
+machine) to the Metasploitable VM (DMZ server). In order to do this, we have to enable Suricata on the SECURITY interface. On the pfSense menu, click on Services and select Suricata. Select Interfaces and then select Add. Click on the Enable checkbox and set Interface to SECURITY (hn2). Once changes are saved, the SECURITY interface can be seen as shown below.
 
-**Result:** Suricata was successfully installed and appeared under the installed packages.
+<img src="06-adding-interface-suricata.png" width="500" height="338">
 
 ---
 
-# Task 3 – Configure Suricata
-
-## 3.1 Disable Hardware Offloading
-
-The following hardware offloading options were disabled:
-
-* Hardware checksum offloading
-* Hardware TCP segmentation offloading
-* Hardware large receive offloading
-
-### Evidence
-
-![Hardware Offloading](screenshots/04-hardware-offloading.png)
-
-The pfSense system was then rebooted.
-
----
-
-## 3.2 Configure REDLAN Monitoring
-
-Suricata was configured to monitor the **REDLAN (hn2)** interface.
-
-### Configuration
-
-```text
-Interface: REDLAN
-Operating system interface: hn2
-Status: Enabled/Running
-```
-
-### Evidence
-
-![Suricata REDLAN](screenshots/05-redlan-monitoring.png)
-
-**Result:** Suricata was successfully enabled and running on REDLAN.
-
-The lab specifies REDLAN as the interface to monitor because the scenario is designed to observe traffic sent from Kali toward Metasploitable.
-
----
-
-# 3.3 Custom Suricata Rules
+## Custom Rules
 
 Two custom rules were created.
+
+The ICMP rule detects ping traffic directed toward the BLUE or PURPLE networks.
+The Telnet rule detects TCP traffic destined for port 23 on the BLUE or PURPLE networks.
 
 ### Rule 1 – ICMP
 
 ```text
-alert icmp any any -> [192.168.1.0/24,10.30.0.0/24] any (msg:"PING connection attempt to BLUE/PURPLE"; sid:2000001; rev:1;)
+alert icmp any any -> [192.168.1.0/24,10.30.0.0/24] any (msg:"PING connection attempt to INTERNAL/DMZ"; sid:2000001; rev:1;)
 ```
 
 ### Rule 2 – Telnet
 
 ```text
-alert tcp any any -> [192.168.1.0/24,10.30.0.0/24] 23 (msg:"TELNET connection attempt to BLUE/PURPLE"; sid:2000002; rev:1;)
+alert tcp any any -> [192.168.1.0/24,10.30.0.0/24] 23 (msg:"TELNET connection attempt to INTERNAL/DMZ"; sid:2000002; rev:1;)
 ```
 
-The ICMP rule detects ping traffic directed toward the BLUE or PURPLE networks.
 
-The Telnet rule detects TCP traffic destined for port 23 on the BLUE or PURPLE networks.
+ - EXPLAIN SID AND REV
+<img src="07-custom-rules.png" width="500" height="314">
 
-### Evidence
-
-![Custom Suricata Rules](screenshots/06-custom-rules.png)
 
 ---
 
