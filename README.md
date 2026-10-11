@@ -46,14 +46,14 @@ The lab builds off of the network configuration from my [pfSense Firewall Projec
 <img src="02-pfSense-dashboard.png" width="500" height="457">
 
 
-## Installing Suricata
+## 1. Installing Suricata
 
 After logging into the pfSense WebConfigurator, open the Package Manager page under the System drop down menu. Following this, select Available Packages and search for and download Suricata. Below is the successful installation.
 
 <img src="03-suricata-download.png" width="500" height="490"> <br>
 <img src="04-suricata-installed.png" width="500" height="398">
 
-## Configure Suricata
+## 2. Configure Suricata
 
 First, hardware checksum offloading needs to be disabled. After clicking on System and then Advanced, go to Networking the
 tab. Ensure disable hardware checksum offloading is selected. Save changes and then reboot pfSense. This step ensures accurate packet inspection and alert generation. 
@@ -62,7 +62,7 @@ tab. Ensure disable hardware checksum offloading is selected. Save changes and t
 <img src="05-suricata-configuration.png" width="500" height="560">
 
 
-## Configure SECURITY Monitoring
+## 3. Configure SECURITY Monitoring
 
 In our current lab scenario, we want to monitor traffic sent from the Kali VM (Security Testing
 machine) to the Metasploitable VM (DMZ server). In order to do this, we have to enable Suricata on the SECURITY interface. On the pfSense menu, click on Services and select Suricata. Select Interfaces and then select Add. Click on the Enable checkbox and set Interface to SECURITY (hn2). Once changes are saved, the SECURITY interface can be seen as shown below.
@@ -71,7 +71,7 @@ machine) to the Metasploitable VM (DMZ server). In order to do this, we have to 
 
 ---
 
-## Custom Rules
+## 4. Custom Rules
 
 Two custom rules assigned to the SECURITY interface were created.
 
@@ -98,7 +98,7 @@ alert tcp any any -> [192.168.1.0/24,10.30.0.0/24] 23 (msg:"TELNET connection at
 
 ---
 
-## Testing Suricata Alerts
+## 5. Testing Suricata Alerts
 
 In order to test the alerts, the Kali VM (on SECURITY network) was used to generate ICMP traffic by pinging the Metasploitable VM (on DMZ Network). The Kali VM also connected to the Metasploitable VM via telnet to generate TELNET traffic.
 
