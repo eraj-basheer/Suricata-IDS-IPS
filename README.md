@@ -43,7 +43,7 @@ The lab builds off of the network configuration from my [pfSense Firewall Projec
 
 ### pfSense Configuration
 
-<img src="02-pfSense-dashboard.png" width="500" height="457">
+<img src="02-pfSense-dashboard.png" width="500" height="444">
 
 
 ## 1. Installing Suricata
